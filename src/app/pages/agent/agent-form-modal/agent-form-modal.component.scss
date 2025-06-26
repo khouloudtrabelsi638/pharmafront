@@ -1,0 +1,125 @@
+.mat-outline-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 24px;
+  padding: 0 8px;
+  background: #fff;
+  height: 40px;
+  transition: border-color 0.2s;
+  margin-bottom: 8px;
+
+  &:focus-within {
+    border-color: #1976d2;
+  }
+
+  .mat-icon-prefix {
+    margin-right: 8px;
+    color: #545454;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+  }
+
+  select.mat-custom-select {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1 1 auto;
+    font-size: 16px;
+    padding: 8px 0;
+    appearance: none;
+    -webkit-appearance: none;
+    color: #111;
+    font-family: inherit;
+    cursor: pointer;
+
+    &.placeholder {
+      color: #757575;
+    }
+  }
+
+  .mat-icon-suffix {
+    margin-left: 8px;
+    color: #545454;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    font-size: 20px;
+  }
+}
+
+mat-error {
+  color: #fb977d !important;
+  font-size: 0.75rem !important;
+  font-family: "Roboto", Arial, sans-serif !important;
+  display: block;
+}
+.mat-custom-select {
+  padding: 12px 40px 12px 42px;
+  font-size: 1rem;
+  border: 1.5px solid #bdbdbd;
+  border-radius: 25px;
+  min-height: 48px;
+  background: #fff;
+  font-family: inherit;
+  color: #343536;
+  transition: border-color .2s;
+}
+.mat-custom-select:focus {
+  border: 2px solid #1976d2;
+  outline: none;
+}
+.mat-select-option {
+  padding: 10px 18px;
+  background: #fff;
+  color: #212121;
+}
+.mat-custom-select option:checked {
+  background: #e3f2fd !important;
+  color: #1976d2;
+}
+
+// Champs readonly super clairs (bleu + barre + icône)
+.readonly-field .mat-input-element[readonly] {
+  background: #e3f2fd !important;
+  color: #356393 !important;
+  border-left: 5px solid #1976d2 !important;
+  cursor: not-allowed !important;
+  font-weight: 600;
+  opacity: 1 !important;
+  box-shadow: 0 0 0 1px #1976d233;
+  padding-left: 12px !important;
+  transition: background 0.3s, color 0.3s, border-left 0.3s;
+}
+.readonly-field .mat-form-field-label {
+  color: #1976d2 !important;
+  font-weight: 700;
+  opacity: 1;
+}
+.readonly-field .mat-icon[matSuffix] {
+  color: #1976d2 !important;
+  opacity: 0.85;
+  font-size: 18px !important;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+// Enlève tout fond sur les containers dialog externes
+:host ::ng-deep .mat-mdc-dialog-container,
+:host ::ng-deep .mat-mdc-dialog-surface,
+:host ::ng-deep .mat-mdc-dialog-inner-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+// Mets le fond BLANC et l’arrondi (ou pas) sur ton card seulement
+:host ::ng-deep .mat-card {
+  background: #fff !important;
+  box-shadow: 0 8px 40px #1112 !important; // ou comme tu veux
+  border-radius: 16px !important;          // ou ton arrondi habituel
+  margin: 0 !important;
+}

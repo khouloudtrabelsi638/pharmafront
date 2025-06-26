@@ -1,0 +1,101 @@
+<mat-card class="cardWithShadow theme-card m-b-24">
+  <mat-card-header class="d-flex align-items-center justify-content-between">
+    <mat-card-title class="f-w-600 f-s-18 m-0">Liste des dossiers de recouvrement</mat-card-title>
+    <!-- Bouton Ajouter -->
+    <button mat-flat-button color="primary" class="m-l-16" (click)="addDossier()">
+      <mat-icon>add</mat-icon>
+      <span class="m-l-4">Ajouter dossier</span>
+    </button>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row m-b-16">
+      <div class="col-12 col-md-6 mx-auto">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rechercher dossier</mat-label>
+          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Référence, client, statut...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table mat-table [dataSource]="pagedDossiers" class="w-100 text-center align-middle">
+        <!-- Référence -->
+        <ng-container matColumnDef="reference">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Référence</th>
+          <td mat-cell *matCellDef="let d" class="text-center">
+            {{ formatReference(d.reference) }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="clientId">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Client</th>
+          <td mat-cell *matCellDef="let d" class="text-center">
+            {{ getClientFullName(d.clientId) }}
+          </td>
+        </ng-container>
+        <!-- Montant -->
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Montant</th>
+          <td mat-cell *matCellDef="let d" class="text-center">  {{ d.montant | number:'1.2-2' }} TND</td>
+        </ng-container>
+        <!-- Date échéance -->
+        <ng-container matColumnDef="dateEcheance">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Échéance</th>
+          <td mat-cell *matCellDef="let d" class="text-center">{{ d.dateEcheance | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <!-- Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Statut</th>
+          <td mat-cell *matCellDef="let d" class="text-center">
+  <span [ngClass]="{
+      'bg-light-success text-success': d.statut === 'PAYEE',
+      'bg-light-error text-error': d.statut === 'IMPAYEE',
+      'bg-light-warning text-warning': d.statut === 'EN_COURS',
+      'bg-light-secondary text-muted': d.statut === 'ANNULEE'
+    }"
+        class="rounded f-w-600 p-6 p-y-4 f-s-12">
+    {{ d.statut }}
+  </span>
+          </td>
+        </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+          <td mat-cell *matCellDef="let d" class="text-center">
+            <button mat-icon-button color="primary" (click)="editDossier(d)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteDossier(d)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="viewDossier(d)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [ngClass]="{
+    'highlighted-row': row.id === lastAddedDossierId,
+    'overdue-row': (row.statut === 'EN_COURS' || row.statut === 'IMPAYEE') && isOverdue(row.dateEcheance)
+  }"
+        >
+        </tr>
+      </table>
+      <mat-paginator
+        [length]="filteredDossiers().length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="d-block mx-auto m-t-8"
+        *ngIf="filteredDossiers().length > pageSize">
+      </mat-paginator>
+      <mat-spinner *ngIf="isLoading" diameter="32" class="d-block mx-auto m-t-24"></mat-spinner>
+      <div *ngIf="!isLoading && filteredDossiers().length === 0" class="text-center text-muted m-t-24">
+        Aucun dossier trouvé.
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

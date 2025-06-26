@@ -1,0 +1,22 @@
+.text-center { text-align: center !important; }
+.align-middle { vertical-align: middle !important; }
+.m-l-16 { margin-left: 16px !important; }
+.m-l-4 { margin-left: 4px !important; }
+.f-w-600 { font-weight: 600 !important; }
+.f-s-18 { font-size: 18px !important; }
+.m-0 { margin: 0 !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.m-t-24 { margin-top: 24px !important; }
+.m-b-24 { margin-bottom: 24px !important; }
+.highlighted-row {
+  background: #ffe0b2 !important;
+  box-shadow: 0 2px 12px 0 #fb8c00aa;
+  border-left: 4px solid #fb8c00;
+  transition: background 0.5s, box-shadow 0.7s, border-left 0.7s;
+  position: relative;
+  z-index: 1;
+}
+.row-hover {
+  background: #fff8e1;
+  box-shadow: 0 2px 12px 0 #ff980044;
+}

@@ -1,0 +1,10 @@
+.assigned-dossiers-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 16px;
+}
+.assigned-dossiers-grid > div {
+  display: flex;
+  align-items: center;
+  /* Pas de couleur, pas de background, pas de border */
+}

@@ -1,0 +1,300 @@
+<div mat-dialog-content>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{ isEditMode ? 'Modifier le médicament' : 'Ajouter un médicament' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="medicament-form">
+        
+        <!-- Section Informations de base -->
+        <div class="form-section">
+          <h3>Informations de base</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom du médicament *</mat-label>
+              <input matInput formControlName="nom" placeholder="Nom du médicament">
+              <mat-error *ngIf="getFormControl('nom')?.hasError('required')">
+                {{ getErrorMessage('nom') }}
+              </mat-error>
+              <mat-error *ngIf="getFormControl('nom')?.hasError('maxlength')">
+                {{ getErrorMessage('nom') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Nom générique</mat-label>
+              <input matInput formControlName="nomGenerique" placeholder="Nom générique">
+              <mat-error *ngIf="getFormControl('nomGenerique')?.hasError('maxlength')">
+                {{ getErrorMessage('nomGenerique') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Principe actif</mat-label>
+              <input matInput formControlName="principeActif" placeholder="Principe actif">
+              <mat-error *ngIf="getFormControl('principeActif')?.hasError('maxlength')">
+                {{ getErrorMessage('principeActif') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Dosage</mat-label>
+              <input matInput formControlName="dosage" placeholder="ex: 500mg">
+              <mat-error *ngIf="getFormControl('dosage')?.hasError('maxlength')">
+                {{ getErrorMessage('dosage') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Forme</mat-label>
+              <mat-select formControlName="forme">
+                <mat-option [value]="null">Aucune</mat-option>
+                <mat-option *ngFor="let forme of formeOptions" [value]="forme">
+                  {{ forme }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Laboratoire</mat-label>
+              <input matInput formControlName="laboratoire" placeholder="Nom du laboratoire">
+              <mat-error *ngIf="getFormControl('laboratoire')?.hasError('maxlength')">
+                {{ getErrorMessage('laboratoire') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Section Image améliorée -->
+          <div class="form-row image-section">
+            <div class="image-container">
+              <label class="image-label">Image du médicament :</label>
+              
+              <div class="image-upload-area">
+                <input type="file" 
+                       id="image" 
+                       (change)="onImageSelected($event)" 
+                       accept="image/*"
+                       style="display: none;">
+                
+                <button type="button" 
+                        mat-stroked-button 
+                        (click)="triggerFileInput()"
+                        class="upload-btn">
+                  <mat-icon>cloud_upload</mat-icon>
+                  Choisir une image
+                </button>
+                
+                <div *ngIf="imagePreview" class="image-preview-container">
+                  <img [src]="imagePreview" 
+                       alt="Prévisualisation" 
+                       class="image-preview">
+                  <button type="button" 
+                          mat-icon-button 
+                          color="warn" 
+                          (click)="removeImage()"
+                          class="remove-image-btn"
+                          matTooltip="Supprimer l'image">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+                
+                <small class="image-info">
+                  Formats acceptés: JPG, PNG, GIF. Taille maximum: 5MB
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Prix et stock -->
+        <div class="form-section">
+          <h3>Prix et stock</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Prix *</mat-label>
+              <input matInput type="number" formControlName="prix" placeholder="0.00" step="0.01">
+              <span matSuffix>€</span>
+              <mat-error *ngIf="getFormControl('prix')?.hasError('required')">
+                {{ getErrorMessage('prix') }}
+              </mat-error>
+              <mat-error *ngIf="getFormControl('prix')?.hasError('min')">
+                {{ getErrorMessage('prix') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Prix de remboursement</mat-label>
+              <input matInput type="number" formControlName="prixRemboursement" placeholder="0.00" step="0.01">
+              <span matSuffix>€</span>
+              <mat-error *ngIf="getFormControl('prixRemboursement')?.hasError('min')">
+                {{ getErrorMessage('prixRemboursement') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Stock *</mat-label>
+              <input matInput type="number" formControlName="stock" placeholder="0">
+              <mat-error *ngIf="getFormControl('stock')?.hasError('required')">
+                {{ getErrorMessage('stock') }}
+              </mat-error>
+              <mat-error *ngIf="getFormControl('stock')?.hasError('min')">
+                {{ getErrorMessage('stock') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Stock d'alerte *</mat-label>
+              <input matInput type="number" formControlName="stockAlerte" placeholder="5">
+              <mat-error *ngIf="getFormControl('stockAlerte')?.hasError('required')">
+                {{ getErrorMessage('stockAlerte') }}
+              </mat-error>
+              <mat-error *ngIf="getFormControl('stockAlerte')?.hasError('min')">
+                {{ getErrorMessage('stockAlerte') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Section Statut et réglementation -->
+        <div class="form-section">
+          <h3>Statut et réglementation</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Statut *</mat-label>
+              <mat-select formControlName="statut">
+                <mat-option *ngFor="let statut of statutOptions" [value]="statut">
+                  {{ statut }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="getFormControl('statut')?.hasError('required')">
+                {{ getErrorMessage('statut') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Catégorie</mat-label>
+              <mat-select formControlName="categorieId">
+                <mat-option [value]="null">Aucune catégorie</mat-option>
+                <mat-option *ngFor="let categorie of categories" [value]="categorie.id">
+                  {{ categorie.nom }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Date d'expiration</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="dateExpiration">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <div class="checkbox-container">
+              <mat-checkbox formControlName="prescriptionObligatoire">
+                Prescription obligatoire
+              </mat-checkbox>
+              <mat-checkbox formControlName="active">
+                Actif
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Numéro AMM</mat-label>
+              <input matInput formControlName="numeroAMM" placeholder="Numéro d'autorisation">
+              <mat-error *ngIf="getFormControl('numeroAMM')?.hasError('maxlength')">
+                {{ getErrorMessage('numeroAMM') }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Code EAN</mat-label>
+              <input matInput formControlName="codeEAN" placeholder="Code à barres">
+              <mat-error *ngIf="getFormControl('codeEAN')?.hasError('maxlength')">
+                {{ getErrorMessage('codeEAN') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- Section Informations détaillées -->
+        <div class="form-section">
+          <h3>Informations détaillées</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="3" 
+                        placeholder="Description du médicament"></textarea>
+              <mat-error *ngIf="getFormControl('description')?.hasError('maxlength')">
+                {{ getErrorMessage('description') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Posologie</mat-label>
+              <textarea matInput formControlName="posologie" rows="2" 
+                        placeholder="Instructions de dosage"></textarea>
+              <mat-error *ngIf="getFormControl('posologie')?.hasError('maxlength')">
+                {{ getErrorMessage('posologie') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Contre-indications</mat-label>
+              <textarea matInput formControlName="contreIndications" rows="2" 
+                        placeholder="Contre-indications"></textarea>
+              <mat-error *ngIf="getFormControl('contreIndications')?.hasError('maxlength')">
+                {{ getErrorMessage('contreIndications') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Effets secondaires</mat-label>
+              <textarea matInput formControlName="effetsSecondaires" rows="2" 
+                        placeholder="Effets secondaires possibles"></textarea>
+              <mat-error *ngIf="getFormControl('effetsSecondaires')?.hasError('maxlength')">
+                {{ getErrorMessage('effetsSecondaires') }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="close()" [disabled]="isLoading">
+    Annuler
+  </button>
+  <button mat-raised-button color="primary" 
+          (click)="onSubmit()" 
+          [disabled]="form.invalid || isLoading">
+    <mat-icon *ngIf="isLoading">hourglass_empty</mat-icon>
+    {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+  </button>
+</div>

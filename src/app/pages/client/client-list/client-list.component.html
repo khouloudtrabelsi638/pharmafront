@@ -1,0 +1,80 @@
+<mat-card class="cardWithShadow theme-card m-b-24">
+  <mat-card-header class="d-flex align-items-center justify-content-between">
+    <mat-card-title class="f-w-600 f-s-18 m-0">Liste des clients</mat-card-title>
+    <!-- Bouton d'ajout, à activer si tu fais un modal/form -->
+    <button mat-flat-button color="primary" (click)="openClientForm()" class="m-l-16">
+      <mat-icon>add</mat-icon>
+      <span class="m-l-4">Ajouter client</span>
+    </button>
+
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row m-b-16">
+      <div class="col-12 col-md-6 mx-auto">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rechercher client</mat-label>
+          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nom, prénom, CIN, email...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="pagedData" class="w-100 text-center align-middle">
+
+        <!-- Génération dynamique des colonnes, sauf actions -->
+        <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
+          <th mat-header-cell *matHeaderCellDef class="text-center">{{ col | titlecase }}</th>
+          <td mat-cell *matCellDef="let client" class="text-center">
+            <ng-container [ngSwitch]="col">
+              <ng-container *ngSwitchCase="'actions'">
+                <button mat-icon-button color="primary" (click)="openEditClientModal(client)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="confirmDelete(client)" matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" [routerLink]="['/clients', client.id]" matTooltip="Voir détails">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </ng-container>
+              <ng-container *ngSwitchCase="'age'">
+                {{ client.age !== undefined && client.age !== null ? client.age : '-' }}
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                {{ displayValue(client[col]) }}
+              </ng-container>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [ngClass]="{'highlighted-row': row.id === lastAddedClientId}"
+          (mouseenter)="hoveredRow = row.id"
+          (mouseleave)="hoveredRow = null"
+          [class.row-hover]="hoveredRow === row.id">
+        </tr>
+      </table>
+      <mat-paginator
+        [length]="filteredClients().length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="d-block mx-auto m-t-8"
+        *ngIf="filteredClients().length > pageSize">
+      </mat-paginator>
+
+      <mat-spinner *ngIf="isLoading" diameter="32" class="d-block mx-auto m-t-24"></mat-spinner>
+      <div *ngIf="!isLoading && filteredClients().length === 0" class="text-center text-muted m-t-24">
+        Aucun client trouvé.
+      </div>
+      <div *ngIf="error" class="text-center text-danger m-t-24">
+        {{ error }}
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

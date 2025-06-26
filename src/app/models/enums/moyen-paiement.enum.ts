@@ -1,0 +1,6 @@
+export enum MoyenPaiement {
+  ESPECES = 'ESPECES',
+  CHEQUE = 'CHEQUE',
+  VIREMENT = 'VIREMENT',
+  CARTE_CREDIT = 'CARTE_CREDIT'
+}

@@ -1,0 +1,71 @@
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.table th {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  
+  &:hover {
+    background-color: #f8f9fa;
+  }
+  
+  i {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.badge {
+  padding: 0.35em 0.65em;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  
+  &-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  &-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  &-warning {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  
+  &-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+}
+
+.pagination {
+  margin-bottom: 0;
+  
+  .page-link {
+    cursor: pointer;
+  }
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-success {
+  color: #28a745 !important;
+}

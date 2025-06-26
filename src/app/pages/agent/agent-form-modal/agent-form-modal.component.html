@@ -1,0 +1,138 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">{{ isEditMode ? 'Modifier l’agent' : 'Ajouter un agent' }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content class="b-t-1 dialog-form-content">
+    <form [formGroup]="agentForm" (ngSubmit)="submitForm()">
+
+      <!-- Nom (readonly en édition) -->
+      <mat-label class="f-w-600 m-b-8 d-block">Nom</mat-label>
+      <mat-form-field appearance="outline" class="w-100 mb-3" [ngClass]="{'readonly-field': isEditMode}">
+        <mat-icon matPrefix>person</mat-icon>
+        <input
+          matInput
+          formControlName="nom"
+          placeholder="Nom"
+          autocomplete="off"
+          [readonly]="isEditMode"
+        />
+        <!-- Info badge readonly -->
+        <span *ngIf="isEditMode" matSuffix>
+          <mat-icon matTooltip="Non modifiable après création" color="primary" fontIcon="info"></mat-icon>
+        </span>
+        <mat-error *ngIf="agentForm.controls['nom'].touched && agentForm.controls['nom'].invalid">
+          Le nom est requis.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Prénom (readonly en édition) -->
+      <mat-label class="f-w-600 m-b-8 d-block">Prénom</mat-label>
+      <mat-form-field appearance="outline" class="w-100 mb-3" [ngClass]="{'readonly-field': isEditMode}">
+        <mat-icon matPrefix>badge</mat-icon>
+        <input
+          matInput
+          formControlName="prenom"
+          placeholder="Prénom"
+          autocomplete="off"
+          [readonly]="isEditMode"
+        />
+        <span *ngIf="isEditMode" matSuffix>
+          <mat-icon matTooltip="Non modifiable après création" color="primary" fontIcon="info"></mat-icon>
+        </span>
+        <mat-error *ngIf="agentForm.controls['prenom'].touched && agentForm.controls['prenom'].invalid">
+          Le prénom est requis.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- CIN (readonly en édition) -->
+      <mat-label class="f-w-600 m-b-8 d-block">CIN</mat-label>
+      <mat-form-field appearance="outline" class="w-100 mb-3" [ngClass]="{'readonly-field': isEditMode}">
+        <mat-icon matPrefix>credit_card</mat-icon>
+        <input
+          matInput
+          formControlName="cin"
+          placeholder="CIN"
+          autocomplete="off"
+          [readonly]="isEditMode"
+        />
+        <span *ngIf="isEditMode" matSuffix>
+          <mat-icon matTooltip="Non modifiable après création" color="primary" fontIcon="info"></mat-icon>
+        </span>
+        <mat-error *ngIf="agentForm.controls['cin'].touched && agentForm.controls['cin'].invalid">
+          Le CIN est requis.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email (modifiable) -->
+      <mat-label class="f-w-600 m-b-8 d-block">Email</mat-label>
+      <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput type="email" formControlName="email" placeholder="Email" autocomplete="off" />
+        <mat-error *ngIf="agentForm.controls['email'].touched && agentForm.controls['email'].hasError('required')">
+          L’email est requis.
+        </mat-error>
+        <mat-error *ngIf="agentForm.controls['email'].touched && agentForm.controls['email'].hasError('email')">
+          Format d’email invalide.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Téléphone (modifiable) -->
+      <mat-label class="f-w-600 m-b-8 d-block">Téléphone</mat-label>
+      <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-icon matPrefix>call</mat-icon>
+        <input matInput formControlName="telephone" placeholder="Téléphone" autocomplete="off" />
+        <mat-error *ngIf="agentForm.controls['telephone'].touched && agentForm.controls['telephone'].invalid">
+          Le téléphone est requis.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Zone géographique (modifiable) -->
+      <mat-label class="f-w-600 m-b-8 d-block">Zone géographique</mat-label>
+      <div class="mat-outline-wrap mb-3">
+        <span class="mat-icon-prefix"><mat-icon>public</mat-icon></span>
+        <select
+          class="mat-custom-select"
+          formControlName="zone"
+          [ngClass]="{'placeholder': !agentForm.value.zone}">
+          <option value="" disabled selected hidden>Sélectionner la zone</option>
+          <option *ngFor="let zone of zones" [value]="zone" class="mat-select-option">
+            {{ zone | titlecase }}
+          </option>
+        </select>
+        <span class="mat-icon-suffix">
+          <mat-icon>expand_more</mat-icon>
+        </span>
+      </div>
+      <mat-error *ngIf="agentForm.controls['zone'].touched && agentForm.controls['zone'].invalid">
+        La zone est requise.
+      </mat-error>
+
+      <!-- Message d’erreur général -->
+      <div *ngIf="errorMsg" class="alert alert-danger mt-2">
+        {{ errorMsg }}
+      </div>
+
+      <!-- Actions -->
+      <div class="dialog-form-actions d-flex justify-content-end gap-2">
+        <button mat-flat-button color="primary" class="m-r-8"
+                [disabled]="isSubmitting || agentForm.invalid">
+          <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+          <span class="m-l-4">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+          <span class="m-l-4">Annuler</span>
+        </button>
+        <button
+          mat-stroked-button
+          color="secondary"
+          type="button"
+          (click)="resetForm()"
+        >
+          <mat-icon>restart_alt</mat-icon>
+          <span class="m-l-4">Réinitialiser</span>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

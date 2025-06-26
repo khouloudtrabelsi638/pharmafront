@@ -1,0 +1,56 @@
+<mat-card>
+  <mat-card-title>Affecter des dossiers à l’agent</mat-card-title>
+  <mat-card-content>
+    <mat-spinner *ngIf="isLoading"></mat-spinner>
+    <div *ngIf="!isLoading">
+      <div *ngIf="errorMsg" class="alert alert-danger mb-3">{{ errorMsg }}</div>
+      <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-label>Rechercher</mat-label>
+        <input matInput (input)="onInput($event)" placeholder="Filtrer les dossiers..." />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div *ngIf="filteredDossiers.length > 0; else noDossier">
+        <div class="dossiers-grid">
+          <div
+            class="dossier-card"
+            *ngFor="let dossier of filteredDossiers"
+            (click)="toggleSelection(dossier.id)"
+            [class.selected]="selectedIds.includes(dossier.id)"
+          >
+            <mat-icon
+              class="folder-icon"
+              [ngClass]="{'selected-icon': selectedIds.includes(dossier.id)}"
+            >folder
+            </mat-icon>
+            <div class="ref-dossier styled-ref">
+              <span class="ref-hash">#</span>
+              <span class="ref-bloc">{{ getStyledMiniRef(dossier.reference).first }}</span>
+              <span class="ref-dash" style="margin: 0 3px;">-</span>
+              <ng-container *ngFor="let char of getStyledMiniRef(dossier.reference).rest">
+                <span class="ref-bloc">{{ char }}</span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noDossier>
+        <div class="text-center text-muted py-4">
+          <mat-icon style="font-size:48px">folder_off</mat-icon>
+          <div>Aucun dossier disponible à affecter.</div>
+        </div>
+      </ng-template>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <span class="mr-auto text-muted" *ngIf="selectedIds.length > 0">
+      {{ selectedIds.length }} dossier{{ selectedIds.length > 1 ? 's' : '' }} sélectionné{{ selectedIds.length > 1 ? 's' : '' }}
+    </span>
+    <button mat-flat-button color="primary" (click)="submit()" [disabled]="selectedIds.length === 0 || isLoading">
+      <mat-icon>check</mat-icon> Affecter
+    </button>
+    <button mat-button (click)="cancel()"><mat-icon>close</mat-icon> Annuler</button>
+  </mat-card-actions>
+</mat-card>

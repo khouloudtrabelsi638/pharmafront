@@ -1,0 +1,124 @@
+<div class="stock-adjustment-modal">
+  <mat-dialog-content>
+    <div class="d-flex align-items-center m-b-24">
+      <mat-icon class="f-s-32 text-primary m-r-16">inventory</mat-icon>
+      <div>
+        <h2 class="m-0">Ajustement de Stock</h2>
+        <p class="text-muted m-0">{{ data.medicament.nom }}</p>
+      </div>
+    </div>
+
+    <!-- Informations actuelles -->
+    <mat-card class="m-b-24 bg-light">
+      <mat-card-content class="p-16">
+        <div class="row">
+          <div class="col-6">
+            <div class="text-center">
+              <mat-icon class="f-s-24 text-primary">inventory_2</mat-icon>
+              <h3 class="m-t-8 m-b-4">{{ data.medicament.stock }}</h3>
+              <small class="text-muted">Stock actuel</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="text-center">
+              <mat-icon class="f-s-24 text-warn">warning</mat-icon>
+              <h3 class="m-t-8 m-b-4">{{ data.medicament.stockAlerte }}</h3>
+              <small class="text-muted">Seuil d'alerte</small>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <form [formGroup]="stockForm" (ngSubmit)="onSubmit()">
+      <!-- Type d'opération -->
+      <mat-form-field appearance="outline" class="w-100 m-b-16">
+        <mat-label>Type d'opération</mat-label>
+        <mat-select formControlName="typeTransaction" required>
+          <mat-option value="ENTREE">
+            <mat-icon class="text-success m-r-8">add_circle</mat-icon>
+            Entrée en stock
+          </mat-option>
+          <mat-option value="SORTIE">
+            <mat-icon class="text-warn m-r-8">remove_circle</mat-icon>
+            Sortie de stock
+          </mat-option>
+          <mat-option value="AJUSTEMENT">
+            <mat-icon class="text-primary m-r-8">tune</mat-icon>
+            Ajustement
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="stockForm.get('typeTransaction')?.hasError('required')">
+          Le type d'opération est obligatoire
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Quantité -->
+      <mat-form-field appearance="outline" class="w-100 m-b-16">
+        <mat-label>
+          {{ getQuantiteLabel() }}
+        </mat-label>
+        <input 
+          matInput 
+          type="number" 
+          formControlName="quantite"
+          [min]="getMinQuantite()"
+          [max]="getMaxQuantite()"
+          required>
+        <mat-hint>{{ getQuantiteHint() }}</mat-hint>
+        <mat-error *ngIf="stockForm.get('quantite')?.hasError('required')">
+          La quantité est obligatoire
+        </mat-error>
+        <mat-error *ngIf="stockForm.get('quantite')?.hasError('min')">
+          {{ getMinQuantiteError() }}
+        </mat-error>
+        <mat-error *ngIf="stockForm.get('quantite')?.hasError('max')">
+          La quantité ne peut pas dépasser {{ getMaxQuantite() }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Motif -->
+      <mat-form-field appearance="outline" class="w-100 m-b-16">
+        <mat-label>Motif (optionnel)</mat-label>
+        <textarea 
+          matInput 
+          formControlName="motif"
+          rows="3"
+          placeholder="Précisez le motif de cet ajustement..."></textarea>
+      </mat-form-field>
+
+      <!-- Aperçu du nouveau stock -->
+      <mat-card class="m-b-24" [ngClass]="getPreviewCardClass()">
+        <mat-card-content class="p-16">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <mat-icon [class]="getPreviewIconClass()">{{ getPreviewIcon() }}</mat-icon>
+              <span class="m-l-8">Nouveau stock :</span>
+            </div>
+            <div class="d-flex align-items-center">
+              <strong class="f-s-18">{{ getNouveauStock() }}</strong>
+              <mat-icon *ngIf="isStockCritique()" class="text-warn m-l-8" matTooltip="Stock critique">
+                warning
+              </mat-icon>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="d-flex justify-content-end p-16">
+    <button mat-button (click)="onCancel()" [disabled]="isLoading">
+      Annuler
+    </button>
+    <button 
+      mat-flat-button 
+      color="primary" 
+      (click)="onSubmit()"
+      [disabled]="!stockForm.valid || isLoading">
+      <mat-spinner *ngIf="isLoading" diameter="20" class="m-r-8"></mat-spinner>
+      <mat-icon *ngIf="!isLoading">save</mat-icon>
+      {{ isLoading ? 'Enregistrement...' : 'Confirmer l\'ajustement' }}
+    </button>
+  </mat-dialog-actions>
+</div>

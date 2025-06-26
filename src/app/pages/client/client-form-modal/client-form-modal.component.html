@@ -1,0 +1,107 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">
+      {{ isEditMode ? 'Éditer client' : 'Ajouter client' }}
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+      <div class="row">
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Nom *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="nom" [readonly]="isEditMode" required placeholder="Nom" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Prénom *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="prenom" [readonly]="isEditMode" required placeholder="Prénom" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Email *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="email" type="email" required placeholder="Email" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Téléphone *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="telephone" required placeholder="Téléphone" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">CIN *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="cin" [readonly]="isEditMode" required placeholder="CIN" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Date naissance *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="dateNaissance" type="date" [readonly]="isEditMode" required placeholder="Date de naissance" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Type client *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select formControlName="typeClient" required [disabled]="isEditMode" placeholder="Type client">
+              <mat-option value="" disabled>Sélectionner le type</mat-option>
+              <mat-option value="PARTICULIER">Particulier</mat-option>
+              <mat-option value="ENTREPRISE">Entreprise</mat-option>
+              <mat-option value="VIP">VIP</mat-option>
+              <mat-option value="INSTITUTIONNEL">Institutionnel</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Sexe *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select formControlName="sexe" required [disabled]="isEditMode" placeholder="Sexe">
+              <mat-option value="" disabled>Sélectionner le sexe</mat-option>
+              <mat-option value="M">Homme</mat-option>
+              <mat-option value="F">Femme</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Nationalité</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="nationalite" value="Tunisienne" readonly placeholder="Nationalité" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Adresse</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="adresse" placeholder="Adresse" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Société</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="societe" placeholder="Société" />
+          </mat-form-field>
+        </div>
+        <div class="col">
+          <mat-label class="f-w-600 m-b-8 d-block">Fonction</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input matInput formControlName="fonction" placeholder="Fonction" />
+          </mat-form-field>
+        </div>
+        <div class="col-12">
+          <mat-label class="f-w-600 m-b-8 d-block">Commentaire</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <textarea matInput formControlName="commentaire" placeholder="Commentaire"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="m-t-12">
+        <button mat-flat-button color="primary" class="m-r-8" type="submit" [disabled]="form.invalid">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="close()">Annuler</button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

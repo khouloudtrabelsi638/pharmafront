@@ -1,0 +1,128 @@
+<mat-card class="cardWithShadow theme-card agent-detail-card m-b-24" *ngIf="!isLoading && agent">
+  <mat-card-header>
+    <div class="d-flex align-items-center w-100">
+      <mat-icon color="primary" class="m-r-12">person</mat-icon>
+      <span class="f-w-600 f-s-20">{{ agent.nom }} {{ agent.prenom }}</span>
+      <span class="m-l-auto">
+
+        <button mat-icon-button color="accent" (click)="backToList()" matTooltip="Retour">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </span>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content class="b-t-1">
+    <div class="row">
+      <!-- Left: Infos principales -->
+      <div class="col-lg-4 col-md-6 m-b-16">
+        <mat-card class="b-1 shadow-none">
+          <mat-card-header>
+            <mat-card-title class="f-s-16 f-w-600">Informations</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-list>
+              <mat-list-item>
+                <mat-icon matListItemIcon>badge</mat-icon>
+                <span matListItemTitle>Code</span>
+                <span matListItemLine>{{ agent.code }}</span>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon matListItemIcon>place</mat-icon>
+                <span matListItemTitle>Zone</span>
+                <span matListItemLine>{{ agent.zone || '-' }}</span>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon matListItemIcon>call</mat-icon>
+                <span matListItemTitle>Téléphone</span>
+                <span matListItemLine>{{ agent.telephone }}</span>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon matListItemIcon>mail</mat-icon>
+                <span matListItemTitle>Email</span>
+                <span matListItemLine>{{ agent.email }}</span>
+              </mat-list-item>
+              <mat-list-item>
+                <mat-icon matListItemIcon>event</mat-icon>
+                <span matListItemTitle>Date recrutement</span>
+                <span matListItemLine>{{ agent.dateRecrutement | date: 'longDate' }}</span>
+              </mat-list-item>
+            </mat-list>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <!-- Right: Dossiers et Paiements -->
+      <div class="col-lg-8 col-md-6 m-b-16">
+        <!-- Dossiers -->
+        <mat-card class="b-1 shadow-none m-b-16">
+          <mat-card-header>
+            <mat-card-title class="f-s-16 f-w-600">Dossiers assignés</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="hasDossiers; else noDossiers">
+              <div class="assigned-dossiers-grid">
+                <div *ngFor="let dossierId of agent?.dossierIds">
+                  <mat-icon matListItemIcon color="primary">folder</mat-icon>
+                  <span matListItemTitle>Dossier N°</span>
+                  <span matListItemLine>{{ dossierId }}</span>
+                </div>
+              </div>
+            </div>
+            <ng-template #noDossiers>
+              <div class="text-muted f-s-14">Aucun dossier affecté.</div>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Paiements -->
+        <mat-card class="b-1 shadow-none">
+          <mat-card-header>
+            <mat-card-title class="f-s-16 f-w-600">Paiements collectés</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="paiements.length > 0; else noPaiements" class="table-responsive">
+              <table mat-table [dataSource]="paiements" class="w-100 mat-elevation-z1">
+                <!-- Id -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">#</th>
+                  <td mat-cell *matCellDef="let payment">{{ payment.id }}</td>
+                </ng-container>
+                <!-- Montant -->
+                <ng-container matColumnDef="montant">
+                  <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">Montant</th>
+                  <td mat-cell *matCellDef="let payment">
+                    <span class="badge badge-success p-x-8 p-y-4">
+                      {{ payment.montant | number:'1.2-2' }} DH
+                    </span>
+                  </td>
+                </ng-container>
+                <!-- Date paiement -->
+                <ng-container matColumnDef="datePaiement">
+                  <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">Date</th>
+                  <td mat-cell *matCellDef="let payment">
+                    {{ payment.datePaiement | date:'shortDate' }}
+                  </td>
+                </ng-container>
+                <!-- Référence -->
+                <ng-container matColumnDef="referenceTransaction">
+                  <th mat-header-cell *matHeaderCellDef class="f-w-600 f-s-14">Référence</th>
+                  <td mat-cell *matCellDef="let payment">{{ payment.referenceTransaction }}</td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['id', 'montant', 'datePaiement', 'referenceTransaction']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['id', 'montant', 'datePaiement', 'referenceTransaction']"></tr>
+              </table>
+            </div>
+            <ng-template #noPaiements>
+              <span class="text-muted f-s-14">Aucun paiement collecté.</span>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-spinner *ngIf="isLoading" diameter="40" class="d-block mx-auto m-t-32"></mat-spinner>
+<div *ngIf="error && !isLoading" class="alert alert-danger text-center m-t-32">
+  {{ error }}
+</div>

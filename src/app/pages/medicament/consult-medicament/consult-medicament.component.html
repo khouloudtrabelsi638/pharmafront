@@ -1,0 +1,123 @@
+<div class="container">
+  <mat-card>
+    <mat-card-title>Recherche de médicaments</mat-card-title>
+    <mat-card-content>
+      <form [formGroup]="searchForm" class="mat-grid-container" fxLayoutGap="16px" fxLayout="row wrap">
+        <mat-form-field appearance="outline" fxFlex="25%">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" placeholder="Nom du médicament">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="25%">
+          <mat-label>Principe actif</mat-label>
+          <input matInput formControlName="principeActif" placeholder="Principe actif">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="20%">
+          <mat-label>Laboratoire</mat-label>
+          <input matInput formControlName="laboratoire" placeholder="Laboratoire">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="15%">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="statut">
+            <mat-option value="">Tous</mat-option>
+            <mat-option *ngFor="let s of statuts" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="10%">
+          <mat-label>Prix min</mat-label>
+          <input matInput type="number" formControlName="prixMin">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" fxFlex="10%">
+          <mat-label>Prix max</mat-label>
+          <input matInput type="number" formControlName="prixMax">
+        </mat-form-field>
+
+        <div fxFlex="100%" class="text-right">
+          <button mat-stroked-button color="warn" (click)="resetFilters()">
+            <mat-icon>refresh</mat-icon> Réinitialiser
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="mt-4">
+    <mat-card-title>Liste des médicaments</mat-card-title>
+    <mat-card-content>
+      <div *ngIf="isLoading" class="text-center">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="medicaments" class="mat-elevation-z8" *ngIf="!isLoading">
+
+        <!-- Nom -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>Nom</th>
+          <td mat-cell *matCellDef="let element">{{ element.nom }}</td>
+        </ng-container>
+
+        <!-- Principe actif -->
+        <ng-container matColumnDef="principeActif">
+          <th mat-header-cell *matHeaderCellDef>Principe Actif</th>
+          <td mat-cell *matCellDef="let element">{{ element.principeActif || '-' }}</td>
+        </ng-container>
+
+        <!-- Laboratoire -->
+        <ng-container matColumnDef="laboratoire">
+          <th mat-header-cell *matHeaderCellDef>Laboratoire</th>
+          <td mat-cell *matCellDef="let element">{{ element.laboratoire || '-' }}</td>
+        </ng-container>
+
+        <!-- Prix -->
+        <ng-container matColumnDef="prix">
+          <th mat-header-cell *matHeaderCellDef>Prix</th>
+          <td mat-cell *matCellDef="let element">{{ element.prix }} DT</td>
+        </ng-container>
+
+        <!-- Stock -->
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef>Stock</th>
+          <td mat-cell *matCellDef="let element">
+            <span [ngClass]="{
+              'text-danger': element.stock <= 0,
+              'text-warning': element.stock > 0 && element.stock <= element.stockAlerte,
+              'text-success': element.stock > element.stockAlerte
+            }">{{ element.stock }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-chip [color]="getChipColor(element.statut)" selected>{{ element.statut }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="primary" [routerLink]="['/medicaments', element.id]">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="pageResponse?.totalElements || 0"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        (page)="onPageChange($event.pageIndex)">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

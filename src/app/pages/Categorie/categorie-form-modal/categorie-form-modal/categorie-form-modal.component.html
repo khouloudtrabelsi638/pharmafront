@@ -1,0 +1,124 @@
+<mat-card class="cardWithShadow theme-card">
+  <mat-card-header>
+    <mat-card-title class="m-b-0">
+      {{ isEditMode ? 'Éditer catégorie' : 'Ajouter catégorie' }}
+    </mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+      <div class="row">
+        
+        <div class="col-12 col-md-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Nom de la catégorie *</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input 
+              matInput 
+              formControlName="nom" 
+              required 
+              placeholder="Ex: Antalgiques, Cardiovasculaires..." 
+              maxlength="100"
+            />
+            <mat-error *ngIf="form.get('nom')?.hasError('required')">
+              Le nom est obligatoire
+            </mat-error>
+            <mat-error *ngIf="form.get('nom')?.hasError('maxlength')">
+              Maximum 100 caractères
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Catégorie parente</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-select 
+              formControlName="categoriePere" 
+              placeholder="Sélectionner une catégorie parente (optionnel)"
+            >
+              <mat-option value="">Aucune (catégorie racine)</mat-option>
+              <mat-option *ngFor="let categorie of categories" [value]="categorie.id">
+                {{ categorie.nom }}
+                <span *ngIf="categorie.categorieParenteNom" class="text-muted">
+                  ({{ categorie.categorieParenteNom }})
+                </span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Description -->
+        <div class="col-12">
+          <mat-label class="f-w-600 m-b-8 d-block">Description</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <textarea 
+              matInput 
+              formControlName="description" 
+              placeholder="Description détaillée de la catégorie..."
+              rows="3"
+              maxlength="500"
+            ></textarea>
+            <mat-hint align="end">
+              {{ form.get('description')?.value?.length || 0 }}/500
+            </mat-hint>
+          </mat-form-field>
+        </div>
+
+        <!-- Ordre d'affichage -->
+        <div class="col-12 col-md-6">
+          <mat-label class="f-w-600 m-b-8 d-block">Ordre d'affichage</mat-label>
+          <mat-form-field appearance="outline" class="w-100">
+            <input 
+              matInput 
+              formControlName="ordre" 
+              type="number" 
+              min="0" 
+              placeholder="0"
+            />
+            <mat-hint>Plus le nombre est petit, plus la catégorie apparaît en premier</mat-hint>
+            <mat-error *ngIf="form.get('ordre')?.hasError('min')">
+              L'ordre doit être un nombre positif
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Statut actif -->
+        <div class="col-12 col-md-6 d-flex align-items-center">
+          <mat-checkbox 
+            formControlName="active" 
+            class="m-t-16"
+          >
+            Catégorie active
+          </mat-checkbox>
+          <mat-hint class="m-l-8 text-muted">
+            Les catégories inactives ne sont pas visibles dans la liste
+          </mat-hint>
+        </div>
+
+      </div>
+
+      <div class="action-buttons m-t-24">
+        <button 
+          mat-flat-button 
+          color="primary" 
+          class="m-r-8" 
+          type="submit" 
+          [disabled]="form.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">{{ isEditMode ? 'Enregistrer' : 'Ajouter' }}</span>
+          <span *ngIf="isLoading">{{ isEditMode ? 'Enregistrement...' : 'Ajout...' }}</span>
+        </button>
+        
+        <button 
+          mat-stroked-button 
+          color="warn" 
+          type="button" 
+          (click)="close()"
+          [disabled]="isLoading"
+        >
+          Annuler
+        </button>
+      </div>
+
+    </form>
+  </mat-card-content>
+</mat-card>

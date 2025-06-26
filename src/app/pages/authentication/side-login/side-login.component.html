@@ -1,0 +1,82 @@
+<div class="blank-layout-container justify-content-center align-items-center bg-light">
+  <div class="position-relative row w-100 h-100 bg-gredient justify-content-center">
+    <div class="col-lg-4 d-flex align-items-center">
+      <mat-card class="cardWithShadow boxed-auth">
+        <mat-card-content class="p-32">
+
+          <div class="row m-t-24 custom-row">
+            <div class="col-12 col-sm-6">
+              <button mat-stroked-button class="w-100">
+                <div class="d-flex align-items-center">
+                  <img src="/assets/images/svgs/google-icon.svg" alt="google" width="16" class="m-r-8" />
+                  <span>Google</span>
+                </div>
+              </button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button mat-stroked-button class="w-100 d-flex align-items-center">
+                <div class="d-flex align-items-center">
+                  <img src="/assets/images/svgs/facebook-icon.svg" alt="facebook" width="40" class="m-r-4" />
+                  Facebook
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="or-border m-t-30">ou connectez-vous avec</div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()" class="m-t-30">
+            <!-- Nom d'utilisateur -->
+            <mat-label class="f-s-14 f-w-600 m-b-12 d-block">Nom d'utilisateur</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input
+                matInput
+                formControlName="uname"
+                placeholder="Entrez votre nom d'utilisateur"
+                [class.is-invalid]="form.get('uname')?.invalid && form.get('uname')?.touched"
+              />
+              <mat-error *ngIf="form.get('uname')?.invalid && form.get('uname')?.touched">
+                {{ getErrorMessage('uname') }}
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Mot de passe -->
+            <mat-label class="f-s-14 f-w-600 m-b-12 d-block">Mot de passe</mat-label>
+            <mat-form-field appearance="outline" class="w-100" color="primary">
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Entrez votre mot de passe"
+                [class.is-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+              />
+              <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" tabindex="-1">
+                <mat-icon>{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+                {{ getErrorMessage('password') }}
+              </mat-error>
+            </mat-form-field>
+
+            <div class="d-flex align-items-center m-b-12">
+              <mat-checkbox color="primary">Se souvenir de cet appareil</mat-checkbox>
+              <a [routerLink]="['/']" class="text-primary f-w-600 text-decoration-none m-l-auto f-s-14">
+                Mot de passe oublié ?
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              mat-flat-button
+              color="primary"
+              class="w-100"
+              [disabled]="isLoading || form.invalid">
+              <mat-spinner *ngIf="isLoading" diameter="20" class="m-r-8"></mat-spinner>
+              {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

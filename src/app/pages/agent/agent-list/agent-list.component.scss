@@ -1,0 +1,60 @@
+// agent-list.component.scss
+
+.text-center {
+  text-align: center !important;
+}
+.align-middle {
+  vertical-align: middle !important;
+}
+.m-l-16 {
+  margin-left: 16px !important;
+}
+.m-l-4 {
+  margin-left: 4px !important;
+}
+.f-w-600 {
+  font-weight: 600 !important;
+}
+.f-s-18 {
+  font-size: 18px !important;
+}
+.m-0 {
+  margin: 0 !important;
+}
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.m-t-24 {
+  margin-top: 24px !important;
+}
+.m-b-24 {
+  margin-bottom: 24px !important;
+}
+.highlighted-row {
+  background: #e3f2fd !important; /* couleur Material "primary" très claire */
+  box-shadow: 0 2px 12px 0 #1976d244; /* ombre douce, bleutée */
+  border-left: 4px solid #1976d2;      /* barre latérale bleue */
+  transition: background 0.5s, box-shadow 0.7s, border-left 0.7s;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes agent-highlight {
+  0% {
+    background: #1976d222; // Très marqué
+    box-shadow: 0 0 36px 6px #1976d2cc;
+  }
+  60% {
+    background: #e3f2fd;
+    box-shadow: 0 0 14px 2px #1976d299;
+  }
+  100% {
+    background: inherit;
+    box-shadow: none;
+  }
+}
+.row-hover {
+  background: #e3f2fd;
+  box-shadow: 0 2px 12px 0 #1976d244;
+}

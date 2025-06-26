@@ -1,0 +1,242 @@
+<mat-card class="cardWithShadow theme-card m-b-24">
+  <mat-card-header class="d-flex align-items-center justify-content-between">
+    <mat-card-title class="f-w-600 f-s-18 m-0">Liste des médicaments</mat-card-title>
+    <button mat-flat-button color="primary" (click)="openMedicamentForm()" class="m-l-16">
+      <mat-icon>add</mat-icon>
+      <span class="m-l-4">Ajouter médicament</span>
+    </button>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <!-- Filtres de recherche -->
+    <div class="row m-b-16">
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rechercher par nom</mat-label>
+          <input matInput [(ngModel)]="filters.nom" (ngModelChange)="onFilterChange()" placeholder="Nom du médicament...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Principe actif</mat-label>
+          <input matInput [(ngModel)]="filters.principeActif" (ngModelChange)="onFilterChange()" placeholder="Principe actif...">
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-4">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Laboratoire</mat-label>
+          <input matInput [(ngModel)]="filters.laboratoire" (ngModelChange)="onFilterChange()" placeholder="Laboratoire...">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row m-b-16">
+      <div class="col-12 col-md-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Statut</mat-label>
+          <mat-select [(value)]="filters.statut" (selectionChange)="onFilterChange()">
+            <mat-option value="">Tous</mat-option>
+            <mat-option value="DISPONIBLE">Disponible</mat-option>
+            <mat-option value="RUPTURE_STOCK">Rupture de stock</mat-option>
+            <mat-option value="RETIRE">Retiré</mat-option>
+            <mat-option value="SUSPENDU">Suspendu</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Prix minimum</mat-label>
+          <input matInput type="number" [(ngModel)]="filters.prixMin" (ngModelChange)="onFilterChange()" placeholder="0.00">
+          <span matPrefix>€&nbsp;</span>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Prix maximum</mat-label>
+          <input matInput type="number" [(ngModel)]="filters.prixMax" (ngModelChange)="onFilterChange()" placeholder="999.99">
+          <span matPrefix>€&nbsp;</span>
+        </mat-form-field>
+      </div>
+      <div class="col-12 col-md-3 d-flex align-items-center">
+        <button mat-stroked-button (click)="clearFilters()" class="w-100">
+          <mat-icon>clear</mat-icon>
+          Effacer filtres
+        </button>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="row m-b-16">
+      <div class="col-12">
+        <button mat-button color="accent" (click)="loadMedicamentsDisponibles()" class="m-r-8">
+          <mat-icon>check_circle</mat-icon>
+          Disponibles
+        </button>
+        <button mat-button color="warn" (click)="loadMedicamentsEnRupture()" class="m-r-8">
+          <mat-icon>warning</mat-icon>
+          Rupture de stock
+        </button>
+        <button mat-button color="primary" (click)="loadMedicamentsEnAlerte()">
+          <mat-icon>notification_important</mat-icon>
+          Alerte stock
+        </button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="pagedData" class="w-100 text-center align-middle">
+        
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Nom</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <div class="d-flex flex-column align-items-center">
+              <strong>{{ medicament.nom }}</strong>
+              <small class="text-muted" *ngIf="medicament.nomGenerique">{{ medicament.nomGenerique }}</small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Principe Actif -->
+        <ng-container matColumnDef="principeActif">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Principe Actif</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <span [matTooltip]="medicament.principeActif" *ngIf="medicament.principeActif">
+              {{ medicament.principeActif.length > 30 ? (medicament.principeActif | slice:0:30) + '...' : medicament.principeActif }}
+            </span>
+            <span *ngIf="!medicament.principeActif">-</span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Dosage et Forme -->
+        <ng-container matColumnDef="dosageForme">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Dosage / Forme</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <div class="d-flex flex-column align-items-center">
+              <span *ngIf="medicament.dosage">{{ medicament.dosage }}</span>
+              <mat-chip *ngIf="medicament.forme" color="accent" class="m-t-4">
+                {{ medicament.forme }}
+              </mat-chip>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Laboratoire -->
+        <ng-container matColumnDef="laboratoire">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Laboratoire</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <span>{{ medicament.laboratoire || '-' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Prix -->
+        <ng-container matColumnDef="prix">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Prix</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <div class="d-flex flex-column align-items-center">
+              <strong>{{ medicament.prix | currency:'EUR':'symbol':'1.2-2' }}</strong>
+              <small class="text-muted" *ngIf="medicament.prixRemboursement">
+                Remb: {{ medicament.prixRemboursement | currency:'EUR':'symbol':'1.2-2' }}
+              </small>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Stock -->
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Stock</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <mat-chip [color]="getStockColor(medicament)">
+              <mat-icon>{{ getStockIcon(medicament) }}</mat-icon>
+              {{ medicament.stock }}
+            </mat-chip>
+            <div class="text-xs text-muted m-t-4">
+              Alerte: {{ medicament.stockAlerte }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Statut -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Statut</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <mat-chip [color]="getStatutColor(medicament.statut)">
+              <mat-icon>{{ getStatutIcon(medicament.statut) }}</mat-icon>
+              {{ getStatutLabel(medicament.statut) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Prescription -->
+        <ng-container matColumnDef="prescription">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Prescription</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <mat-chip [color]="medicament.prescriptionObligatoire ? 'warn' : 'primary'">
+              <mat-icon>{{ medicament.prescriptionObligatoire ? 'medical_services' : 'healing' }}</mat-icon>
+              {{ medicament.prescriptionObligatoire ? 'Obligatoire' : 'Libre' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+          <td mat-cell *matCellDef="let medicament" class="text-center">
+            <button mat-icon-button color="primary" (click)="openEditMedicamentModal(medicament)" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="openStockAdjustment(medicament)" matTooltip="Ajuster stock">
+              <mat-icon>inventory</mat-icon>
+            </button>
+            <button mat-icon-button [color]="medicament.statut === 'DISPONIBLE' ? 'warn' : 'primary'" 
+                    (click)="toggleStatut(medicament)" 
+                    [matTooltip]="medicament.statut === 'DISPONIBLE' ? 'Suspendre' : 'Réactiver'">
+              <mat-icon>{{ medicament.statut === 'DISPONIBLE' ? 'pause_circle' : 'play_circle' }}</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="confirmDelete(medicament)" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [ngClass]="{'highlighted-row': row.id === lastAddedMedicamentId}"
+          (mouseenter)="hoveredRow = row.id"
+          (mouseleave)="hoveredRow = null"
+          [class.row-hover]="hoveredRow === row.id">
+        </tr>
+      </table>
+      
+      <mat-paginator
+        [length]="totalElements"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="[10, 20, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="d-block mx-auto m-t-8"
+        *ngIf="totalElements > pageSize">
+      </mat-paginator>
+
+      <mat-spinner *ngIf="isLoading" diameter="32" class="d-block mx-auto m-t-24"></mat-spinner>
+      
+      <div *ngIf="!isLoading && pagedData.length === 0" class="text-center text-muted m-t-24">
+        <mat-icon class="display-1 text-muted">medication</mat-icon>
+        <p>Aucun médicament trouvé.</p>
+        <button mat-flat-button color="primary" (click)="openMedicamentForm()">
+          Ajouter le premier médicament
+        </button>
+      </div>
+      
+      <div *ngIf="error" class="text-center text-danger m-t-24">
+        <mat-icon>error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-button (click)="loadMedicaments()">Réessayer</button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

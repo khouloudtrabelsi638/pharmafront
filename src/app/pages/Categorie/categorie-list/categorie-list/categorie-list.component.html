@@ -1,0 +1,121 @@
+<mat-card class="cardWithShadow theme-card m-b-24">
+  <mat-card-header class="d-flex align-items-center justify-content-between">
+    <mat-card-title class="f-w-600 f-s-18 m-0">Liste des catégories</mat-card-title>
+    <button mat-flat-button color="primary" (click)="openCategorieForm()" class="m-l-16">
+      <mat-icon>add</mat-icon>
+      <span class="m-l-4">Ajouter catégorie</span>
+    </button>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <div class="row m-b-16">
+      <div class="col-12 col-md-6 mx-auto">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Rechercher catégorie</mat-label>
+          <input matInput [(ngModel)]="search" (ngModelChange)="onSearchChange()" placeholder="Nom, description...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table mat-table [dataSource]="pagedData" class="w-100 text-center align-middle">
+        
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Nom</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <strong>{{ categorie.nom }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Description -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Description</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <span [matTooltip]="categorie.description" *ngIf="categorie.description">
+              {{ categorie.description.length > 50 ? (categorie.description | slice:0:50) + '...' : categorie.description }}
+            </span>
+            <span *ngIf="!categorie.description">-</span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Catégorie Parente -->
+        <ng-container matColumnDef="categorieParenteNom">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Catégorie Parente</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <mat-chip *ngIf="categorie.categorieParenteNom" color="accent">
+              {{ categorie.categorieParenteNom }}
+            </mat-chip>
+            <span *ngIf="!categorie.categorieParenteNom" class="text-muted">Racine</span>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Ordre -->
+        <ng-container matColumnDef="ordre">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Ordre</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <mat-chip color="primary">{{ categorie.ordre || 0 }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Active -->
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Statut</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <mat-chip [color]="categorie.active ? 'primary' : 'warn'">
+              <mat-icon>{{ categorie.active ? 'check_circle' : 'cancel' }}</mat-icon>
+              {{ categorie.active ? 'Active' : 'Inactive' }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonne Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-center">Actions</th>
+          <td mat-cell *matCellDef="let categorie" class="text-center">
+            <button mat-icon-button color="primary" (click)="openEditCategorieModal(categorie)" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="loadSousCategories(categorie.id!)" matTooltip="Voir sous-catégories">
+              <mat-icon>category</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="confirmDelete(categorie)" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [ngClass]="{'highlighted-row': row.id === lastAddedCategorieId}"
+          (mouseenter)="hoveredRow = row.id"
+          (mouseleave)="hoveredRow = null"
+          [class.row-hover]="hoveredRow === row.id">
+        </tr>
+      </table>
+      
+      <mat-paginator
+        [length]="filteredCategories().length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="d-block mx-auto m-t-8"
+        *ngIf="filteredCategories().length > pageSize">
+      </mat-paginator>
+
+      <mat-spinner *ngIf="isLoading" diameter="32" class="d-block mx-auto m-t-24"></mat-spinner>
+      
+      <div *ngIf="!isLoading && filteredCategories().length === 0" class="text-center text-muted m-t-24">
+        Aucune catégorie trouvée.
+      </div>
+      
+      <div *ngIf="error" class="text-center text-danger m-t-24">
+        {{ error }}
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
